@@ -1,0 +1,10 @@
+{
+  "name": "git",
+  "description": "monitor git directory for changes.\ndirectorys can opened in Files, files can be opened with git difftool.\nMouse 2 force refresh (re-read json file setting, check git dirs, refresh menu).",
+  "uuid": "git@eexpss.gmail.com",
+  "shell-version": [
+    "40",
+    "41",
+    "42"
+  ]
+}
