@@ -1,6 +1,6 @@
 {
-  "name": "git",
-  "description": "monitor git directory for changes.\ndirectorys can opened in Files, files can be opened with git difftool.\nMouse 2 force refresh (re-read json file setting, check git dirs, refresh menu).",
+  "name": "Git Monitor",
+  "description": "monitor git directory for changes.\ndirectorys can opened in Files, Mouse 3 open in gnome-terminal.\nfiles can be opened with git difftool.\nMouse 2 on panel icon will force refresh (re-read json file setting, check git dirs, refresh menu).",
   "uuid": "git@eexpss.gmail.com",
   "shell-version": [
     "40",

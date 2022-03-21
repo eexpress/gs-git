@@ -1,6 +1,6 @@
 const GETTEXT_DOMAIN = 'git';
 
-const { GObject, St, Gio, GLib } = imports.gi;
+const { GObject, St, Gio, GLib, Pango, Clutter } = imports.gi;
 
 const Gettext = imports.gettext.domain(GETTEXT_DOMAIN);
 const _ = Gettext.gettext;
@@ -23,7 +23,7 @@ let gitDirs = [];
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
 	_init() {
-	    super._init(0.0, _('git'));
+	    super._init(0.0, _('Git Monitor'));
 
 	    this.add_child(new St.Icon({
 			icon_name : 'org.gnome.gitg-symbolic',
@@ -92,18 +92,28 @@ const Indicator = GObject.registerClass(
 	};
 
 	add_menu(path, text, isDir) {
-	    let item = new PopupMenu.PopupMenuItem(text);
-	    item.path = path;
-	    item.connect('activate', (me) => {
-			if (isDir) {
-				Gio.app_info_launch_default_for_uri(`file://${me.path}/${me.label.text}`, global.create_app_launch_context(0, -1));
-			} else {
-				let f = me.label.text;
+	    let item;
+	    if (isDir){
+			item = new PopupMenu.PopupImageMenuItem(text, 'org.gnome.gitg-symbolic');
+			item.label.clutter_text.set_line_alignment(Pango.Alignment.RIGHT);
+			const pango = text.bold().italics().fontcolor("#F29F9C").replace(/font/g, "span");
+			item.label.clutter_text.set_markup(pango);
+			item.connect('activate', (actor, event) => {
+				if (event.get_button() == 3){
+					GLib.spawn_command_line_async(`gnome-terminal --working-directory='${path}/${text}' -- bash -c 'git status; bash'`);
+					return Clutter.EVENT_STOP;
+				}
+				Gio.app_info_launch_default_for_uri(`file://${path}/${text}`, global.create_app_launch_context(0, -1));
+			});
+		}else{
+			item = new PopupMenu.PopupMenuItem(text);
+			item.connect('activate', (actor, event) => {
+				let f = text;
 				f = f.replace(/^.*[:：]\ */, '').trim();
 				if (GLib.chdir(path) != 0) return;
 				GLib.spawn_command_line_async(`git difftool ${f}`);
-			}
-	    });
+			});
+		}
 	    this.menu.addMenuItem(item);
 	};
 
