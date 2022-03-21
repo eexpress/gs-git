@@ -2,7 +2,12 @@
 
 ## monitor git directory for changes.
 
-- directorys can opened in Files, files can be opened with git difftool.
-- Mouse 2 force refresh (re-read json file setting, check git dirs, refresh menu).
+### Panel Icon
+- Mouse 2, force refresh (re-read config file, check git dirs, refresh menu).
+- Mouse 3, open configfile. config file is `~/.config/git-monitor.json`.
+
+### Menu Item
+- Directory: Mouse 1 opened in the Files(Nautilus), Mouse 3 open in the gnome-terminal.
+- Files: opened with `git difftool`, eg `meld`.
 
 ![](screenshot.png)

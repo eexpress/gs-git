@@ -1,0 +1,7 @@
+{
+	"description": "Defined Parent directory for git directory.",
+	"dirs": [
+		"~",
+		"~/project"
+	]
+}

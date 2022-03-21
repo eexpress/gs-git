@@ -19,6 +19,9 @@ function lg(s) {
 }
 
 let gitDirs = [];
+const configname = "git-monitor.json";
+const configfile = GLib.get_user_config_dir() + "/" + configname;
+const configorig = Me.path + "/" + configname;
 
 const Indicator = GObject.registerClass(
 	class Indicator extends PanelMenu.Button {
@@ -35,21 +38,33 @@ const Indicator = GObject.registerClass(
 					this.menu._getMenuItems().forEach((j) => { j.destroy(); });
 					this.refresh();
 				}
+				if (event.get_button() == 3) {	// open configfile
+					Gio.app_info_launch_default_for_uri(`file://${configfile}`, global.create_app_launch_context(0, -1));
+				}
 			});
+
+			if (!GLib.file_test(configfile, GLib.FileTest.IS_REGULAR)){
+				const [ok, content] = GLib.file_get_contents(configorig);
+				if (ok) {
+					GLib.file_set_contents(configfile, content);
+				}
+			}
 
 			this.refresh();
 		}
 
 		refresh() {	 // re-read json file, check all dirs, refresh menu.
 			try {
-				const _dirFile = Me.path + '/git_monitor_dirs.json';
-				if (GLib.file_test(_dirFile, GLib.FileTest.IS_REGULAR)) {
-					const [ok, content] = GLib.file_get_contents(_dirFile);
+				if (GLib.file_test(configfile, GLib.FileTest.IS_REGULAR)) {
+					const [ok, content] = GLib.file_get_contents(configfile);
 					if (ok) {
 						const obj = JSON.parse(ByteArray.toString(content));
-						if (obj) {
+						if (obj.dirs) {
 							gitDirs = [];
-							for (let i of obj) { gitDirs.push(i); }
+							for (let i of obj.dirs) {
+								i = i.replace(/^~/, GLib.get_home_dir());
+								gitDirs.push(i);
+							}
 						}
 					}
 				}
