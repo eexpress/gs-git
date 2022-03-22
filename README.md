@@ -1,5 +1,7 @@
 # gs-git
 
+[<img alt="" height="80" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/4925/git/)
+
 ## monitor git directory for changes.
 
 ### Panel Icon

@@ -2,6 +2,7 @@
   "name": "Git Monitor",
   "description": "## monitor git directory for changes.\n### Panel Icon\n- Mouse 2, force refresh (re-read config file, check git dirs, refresh menu).\n- Mouse 3, open configfile. config file is `~/.config/git-monitor.json`.\n### Menu Item\n- Directory: Mouse 1 opened in the Files(Nautilus), Mouse 3 open in the gnome-terminal.\n- Files: opened with `git difftool`, eg `meld`.",
   "uuid": "git@eexpss.gmail.com",
+  "url": "https://github.com/eexpress/gs-git",
   "shell-version": [
     "40",
     "41",
