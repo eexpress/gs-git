@@ -28,9 +28,11 @@ const Indicator = GObject.registerClass(
 		_init() {
 			super._init(0.0, _('Git Monitor'));
 
+			this.stock_icon = Gio.icon_new_for_string(Me.path + "/org.gnome.gitg-symbolic.svg");
+
 			this.add_child(new St.Icon({
-				icon_name : 'org.gnome.gitg-symbolic',
-				style_class : 'system-status-icon',
+				gicon : this.stock_icon,
+				style_class : 'system-status-icon'
 			}));
 
 			this.connect("button-press-event", (actor, event) => {
@@ -43,7 +45,7 @@ const Indicator = GObject.registerClass(
 				}
 			});
 
-			if (!GLib.file_test(configfile, GLib.FileTest.IS_REGULAR)){
+			if (!GLib.file_test(configfile, GLib.FileTest.IS_REGULAR)) {
 				const [ok, content] = GLib.file_get_contents(configorig);
 				if (ok) {
 					GLib.file_set_contents(configfile, content);
@@ -109,7 +111,7 @@ const Indicator = GObject.registerClass(
 		add_menu(path, text, isDir) {
 			let item;
 			if (isDir) {
-				item = new PopupMenu.PopupImageMenuItem(text, 'org.gnome.gitg-symbolic');
+				item = new PopupMenu.PopupImageMenuItem(text, this.stock_icon);
 				item.label.clutter_text.set_line_alignment(Pango.Alignment.RIGHT);
 				const pango = text.bold().italics().fontcolor("#F29F9C").replace(/font/g, "span");
 				item.label.clutter_text.set_markup(pango);
