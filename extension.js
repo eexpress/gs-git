@@ -12,6 +12,7 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Me = ExtensionUtils.getCurrentExtension();
 const ByteArray = imports.byteArray;
+const Util = imports.misc.util;
 
 const debug = false;
 //~ const debug = true;
@@ -119,6 +120,7 @@ const Indicator = GObject.registerClass(
 				item.connect('activate', (actor, event) => {
 					if (event.get_button() == 3) {
 						GLib.spawn_command_line_async(`gnome-terminal --working-directory='${path}/${text}' -- bash -c 'git status; bash'`);
+						//~ Util.spawn(['gnome-terminal', `--working-directory='${path}/${text}' -- bash -c 'git status; bash'`]); //no work correctly.
 						return Clutter.EVENT_STOP;
 					}
 					Gio.app_info_launch_default_for_uri(`file://${path}/${text}`, global.create_app_launch_context(0, -1));
@@ -129,7 +131,7 @@ const Indicator = GObject.registerClass(
 					let f = text;
 					f = f.replace(/^.*[:：]\ */, '').trim();
 					if (GLib.chdir(path) != 0) return;
-					GLib.spawn_command_line_async(`git difftool ${f}`);
+					Util.spawn(['git', 'difftool', f]);
 				});
 			}
 			this.menu.addMenuItem(item);
