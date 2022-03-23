@@ -1,4 +1,5 @@
-const GETTEXT_DOMAIN = 'git';
+const _domain = 'git-monitor';
+const GETTEXT_DOMAIN = _domain;
 
 const { GObject, St, Gio, GLib, Pango, Clutter } = imports.gi;
 
@@ -15,18 +16,18 @@ const ByteArray = imports.byteArray;
 const debug = false;
 //~ const debug = true;
 function lg(s) {
-	if (debug) log("===" + GETTEXT_DOMAIN + "===>" + s);
+	if (debug) log("===" + _domain + "===>" + s);
 }
 
 let gitDirs = [];
-const configname = "git-monitor.json";
+const configname = _domain + ".json";  //没有界面时，还不能改成schmes方式。
 const configfile = GLib.get_user_config_dir() + "/" + configname;
 const configorig = Me.path + "/" + configname;
 
 const Indicator = GObject.registerClass(
 	class Indicator extends PanelMenu.Button {
 		_init() {
-			super._init(0.0, _('Git Monitor'));
+			super._init(0.0, _domain);
 
 			this.stock_icon = Gio.icon_new_for_string(Me.path + "/org.gnome.gitg-symbolic.svg");
 
