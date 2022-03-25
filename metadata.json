@@ -4,8 +4,6 @@
   "uuid": "git@eexpss.gmail.com",
   "url": "https://github.com/eexpress/gs-git",
   "shell-version": [
-    "40",
-    "41",
-    "42"
+    "40", "41", "42"
   ]
 }
