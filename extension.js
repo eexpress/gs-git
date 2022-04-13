@@ -14,11 +14,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const ByteArray = imports.byteArray;
 const Util = imports.misc.util;
 
-const debug = false;
-//~ const debug = true;
-function lg(s) {
-	if (debug) log("===" + _domain + "===>" + s);
-}
+function lg(s) { log("===" + _domain + "===>" + s); }
 
 let gitDirs = [];
 const configname = _domain + ".json";  //没有界面时，还不能改成schmes方式。
@@ -130,6 +126,10 @@ const Indicator = GObject.registerClass(
 				item.connect('activate', (actor, event) => {
 					let f = text;
 					f = f.replace(/^.*[:：]\ */, '').trim();
+					if (event.get_button() == 3) {
+						Gio.app_info_launch_default_for_uri(`file://${path}/${f}`, global.create_app_launch_context(0, -1));
+						return Clutter.EVENT_STOP;
+					}
 					if (GLib.chdir(path) != 0) return;
 					Util.spawn(['git', 'difftool', f]);
 				});
