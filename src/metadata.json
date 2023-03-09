@@ -3,6 +3,8 @@
   "description": "## monitor git directory for changes.\n> Working with a lot of git directories, I always forgot commit.\n### Panel Icon\n- Mouse 2, force refresh (re-read config file, check git dirs, refresh menu).\n- Mouse 3, open configfile. config file is `~/.config/git-monitor.json`.\n### Menu Item\n- Directory: Mouse 1 opened in the Files(Nautilus), Mouse 3 open in the gnome-terminal.\n- Files: Mouse 1, opened with `git difftool`, eg `meld`. Mouse 3, open file.",
   "uuid": "git@eexpss.gmail.com",
   "url": "https://github.com/eexpress/gs-git",
+  "gettext-domain": "gs-git",
+  "settings-schema": "org.gnome.shell.extensions.gs-git",
   "shell-version": [
     "40", "41", "42", "43"
   ],

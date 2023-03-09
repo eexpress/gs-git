@@ -1,0 +1,23 @@
+<schemalist>
+  <schema id="org.gnome.shell.extensions.gs-git" path="/org/gnome/shell/extensions/gs-git/">
+
+    <key type="s" name="open-in-terminal-command">
+        <default>"kgx --working-directory='%WORKING_DIRECTORY' -- bash -c 'git status; bash'"</default>
+        <summary>Open in terminal command</summary>
+        <description>Command to open directory in terminal.</description>
+    </key>
+
+    <key name="alert-dirty-repos" type="b">
+      <default>false</default>
+      <summary>Alert when when there are dirty repo's</summary>
+      <description>Show in indicator that there are dirty repo's.</description>
+    </key>
+
+    <key name="show-changed-files" type="b">
+      <default>true</default>
+      <summary>List changed files</summary>
+      <description>List changed files in menu.</description>
+    </key>
+
+  </schema>
+</schemalist>

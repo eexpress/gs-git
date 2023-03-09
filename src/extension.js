@@ -1,3 +1,4 @@
+/* vim: set autoindent noexpandtab tabstop=2 shiftwidth=2 :*/
 const _domain = 'git-monitor';
 const GETTEXT_DOMAIN = _domain;
 
@@ -21,17 +22,24 @@ const configname = _domain + ".json";  //没有界面时，还不能改成schmes
 const configfile = GLib.get_user_config_dir() + "/" + configname;
 const configorig = Me.path + "/" + configname;
 
+const TOGGLE_ON_ICON = 'face-smile-symbolic';
+const TOGGLE_OFF_ICON = 'face-sad-symbolic';
+
 const Indicator = GObject.registerClass(
 	class Indicator extends PanelMenu.Button {
 		_init() {
 			super._init(0.0, _domain);
 
+			this.dirtyDirs = 0;
+			this._settings = ExtensionUtils.getSettings();
+			this._settings.connect("changed::open-in-terminal-command", ()=>{this.initSettings();} );
+			this._settings.connect("changed::show-changed-files", ()=>{this.initSettings();} );
+			this._settings.connect("changed::alert-dirty-repos", ()=>{this.initSettings();} );
+			this.initSettings();
 			this.stock_icon = Gio.icon_new_for_string(Me.path + "/org.gnome.gitg-symbolic.svg");
-
-			this.add_child(new St.Icon({
-				gicon : this.stock_icon,
-				style_class : 'system-status-icon'
-			}));
+			this.icon = new St.Icon({style_class: 'system-status-icon'});
+			this.icon.gicon = Gio.icon_new_for_string(Me.path + "/org.gnome.gitg-symbolic.svg");
+			this.add_child(this.icon);
 
 			this.connect("button-press-event", (actor, event) => {
 				if (event.get_button() == 2) {	// refresh
@@ -53,7 +61,14 @@ const Indicator = GObject.registerClass(
 			this.refresh();
 		}
 
+		initSettings(){
+			this.openInTerminalCommand = this._settings.get_string("open-in-terminal-command");
+			this.showChangedFiles = this._settings.get_boolean("show-changed-files");
+			this.alertDirtyRepos = this._settings.get_boolean("alert-dirty-repos");
+		}
+
 		refresh() {	 // re-read json file, check all dirs, refresh menu.
+			this.dirtyDirs = 0;
 			try {
 				if (GLib.file_test(configfile, GLib.FileTest.IS_REGULAR)) {
 					const [ok, content] = GLib.file_get_contents(configfile);
@@ -77,6 +92,9 @@ const Indicator = GObject.registerClass(
 					this.async_cmd_git_st(i, j);
 				}
 			}
+
+			global.log("set alert",this.alertDirtyRepos);
+
 		}
 
 		async_cmd_git_st(root, path) {
@@ -92,10 +110,20 @@ const Indicator = GObject.registerClass(
 						let [, stdout, stderr] = proc.communicate_utf8_finish(res);
 						if (proc.get_successful()) {
 							const l = stdout.split("\n").filter(item => item.match(/[:：](?=\ )/));
+							if(this.dirtyDirs == 0){
+								this.icon.gicon = Gio.icon_new_for_string(Me.path + "/org.gnome.gitg-symbolic.svg");
+							}
 							if (l.length > 0) {
+								this.dirtyDirs += 1;
+								if(this.alertDirtyRepos){
+									this.icon.gicon = Gio.icon_new_for_string(Me.path + "/org.gnome.gitg-symbolic-alert.svg");
+								}
+								global.log("dirty dirts",this.dirtyDirs);
 								this.add_menu(root, path, true);
-								for (let i of l) {
-									this.add_menu(root + "/" + path, i, false);
+								if(this.showChangedFiles){
+									for (let i of l) {
+										this.add_menu(root + "/" + path, i, false);
+									}
 								}
 							}
 						} else {
@@ -115,7 +143,8 @@ const Indicator = GObject.registerClass(
 				item.label.clutter_text.set_markup(pango);
 				item.connect('activate', (actor, event) => {
 					if (event.get_button() == 3) {
-						GLib.spawn_command_line_async(`gnome-terminal --working-directory='${path}/${text}' -- bash -c 'git status; bash'`);
+						let parsed_command = this.openInTerminalCommand.replace(/%WORKING_DIRECTORY/g,`${path}/${text}`)
+						GLib.spawn_command_line_async(parsed_command);
 						//~ Util.spawn(['gnome-terminal', `--working-directory='${path}/${text}' -- bash -c 'git status; bash'`]); //no work correctly.
 						return Clutter.EVENT_STOP;
 					}
@@ -173,6 +202,7 @@ class Extension {
 		this._indicator = new Indicator();
 		Main.panel.addToStatusArea(this._uuid, this._indicator);
 	}
+
 
 	disable() {
 		this._indicator.destroy();

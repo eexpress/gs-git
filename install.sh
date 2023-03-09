@@ -17,7 +17,9 @@ function pack-extension {
     --force \
     --extra-source="../LICENSE" \
     --extra-source="git-monitor.json" \
+    --extra-source="ui.js" \
     --extra-source="org.gnome.gitg-symbolic.svg" \
+    --extra-source="org.gnome.gitg-symbolic-alert.svg" \
     --extra-source="../CHANGELOG.md"
 }
 
