@@ -85,6 +85,15 @@ const Indicator = GObject.registerClass(
 				}
 			} catch (e) { throw e; }
 
+			let globdirs = [];
+			for (let i of gitDirs) {
+				let gd = this.lsDirGlobs(i);
+				if (!gd) continue;
+				globdirs = globdirs.concat(gd);
+			}
+
+			gitDirs = gitDirs.concat(globdirs);
+
 			for (let i of gitDirs) {
 				const r = this.lsDir(i);
 				if (!r) continue;
@@ -92,9 +101,6 @@ const Indicator = GObject.registerClass(
 					this.async_cmd_git_st(i, j);
 				}
 			}
-
-			global.log("set alert",this.alertDirtyRepos);
-
 		}
 
 		async_cmd_git_st(root, path) {
@@ -118,7 +124,6 @@ const Indicator = GObject.registerClass(
 								if(this.alertDirtyRepos){
 									this.icon.gicon = Gio.icon_new_for_string(Me.path + "/org.gnome.gitg-symbolic-alert.svg");
 								}
-								global.log("dirty dirts",this.dirtyDirs);
 								this.add_menu(root, path, true);
 								if(this.showChangedFiles){
 									for (let i of l) {
@@ -165,6 +170,31 @@ const Indicator = GObject.registerClass(
 			}
 			this.menu.addMenuItem(item);
 		};
+
+		lsDirGlobs(path){
+			if(path.slice(-1)==="*"){
+				const parentdir = path.substring(0, path.lastIndexOf('/'));
+				if (!this.isDir(parentdir)) return null;
+				let globStart = path.substring(path.lastIndexOf('/') + 1);
+				globStart = globStart.substring(0, globStart.length - 1);
+				const dir = Gio.File.new_for_path(parentdir);
+				let dirEnum;
+				let r = [];
+				try {
+					dirEnum = dir.enumerate_children('standard::name', Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, null);
+				} catch (e) { dirEnum = null; }
+				if (dirEnum != null) {
+					let info;
+					while (info = dirEnum.next_file(null)) {
+						const f = info.get_name();
+						if (f.startsWith(globStart) && this.isDir(parentdir + "/" + f)) {
+							r.push(parentdir + "/" + f);
+						}
+					}
+				}
+				return r;
+			}
+		}
 
 		lsDir(path) {  // return an array of git dirs in path.
 			if (!this.isDir(path)) return null;
