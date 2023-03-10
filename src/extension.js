@@ -18,6 +18,7 @@ const Util = imports.misc.util;
 function lg(s) { log("===" + _domain + "===>" + s); }
 
 let gitDirs = [];
+let gitRepos = [];
 const configname = _domain + ".json";  //没有界面时，还不能改成schmes方式。
 const configfile = GLib.get_user_config_dir() + "/" + configname;
 const configorig = Me.path + "/" + configname;
@@ -74,11 +75,19 @@ const Indicator = GObject.registerClass(
 					const [ok, content] = GLib.file_get_contents(configfile);
 					if (ok) {
 						const obj = JSON.parse(ByteArray.toString(content));
+
 						if (obj.dirs) {
 							gitDirs = [];
 							for (let i of obj.dirs) {
 								i = i.replace(/^~/, GLib.get_home_dir());
 								gitDirs.push(i);
+							}
+						}
+						if (obj.repos) {
+							gitRepos = [];
+							for (let i of obj.repos) {
+								i = i.replace(/^~/, GLib.get_home_dir());
+								gitRepos.push(i);
 							}
 						}
 					}
@@ -101,6 +110,12 @@ const Indicator = GObject.registerClass(
 					this.async_cmd_git_st(i, j);
 				}
 			}
+			for (let repo of gitRepos) {
+				let repo_parent = repo.substring(0, repo.lastIndexOf('/'));
+				let repo_dir  = repo.substring(repo.lastIndexOf('/') + 1);
+				this.async_cmd_git_st(repo_parent, repo_dir);
+			}
+
 		}
 
 		async_cmd_git_st(root, path) {
