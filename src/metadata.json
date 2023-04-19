@@ -6,7 +6,11 @@
   "gettext-domain": "gs-git",
   "settings-schema": "org.gnome.shell.extensions.gs-git",
   "shell-version": [
-    "40", "41", "42", "43"
+    "40",
+    "41",
+    "42",
+    "43",
+    "44"
   ],
   "version": 7
 }
