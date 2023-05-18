@@ -115,11 +115,12 @@ const Indicator = GObject.registerClass(
 				item.label.clutter_text.set_markup(pango);
 				item.connect('activate', (actor, event) => {
 					if (event.get_button() == 3) {
-						GLib.spawn_command_line_async(`gnome-terminal --working-directory='${path}/${text}' -- bash -c 'git status; bash'`);
+						Gio.app_info_launch_default_for_uri(`file://${path}/${text}`, global.create_app_launch_context(0, -1));
 						//~ Util.spawn(['gnome-terminal', `--working-directory='${path}/${text}' -- bash -c 'git status; bash'`]); //no work correctly.
 						return Clutter.EVENT_STOP;
 					}
-					Gio.app_info_launch_default_for_uri(`file://${path}/${text}`, global.create_app_launch_context(0, -1));
+					//~ GLib.spawn_command_line_async(`gnome-terminal --working-directory='${path}/${text}' -- bash -c 'git status; bash'`);
+					Util.spawn(['git', 'difftool', '-d', path+"/"+text]);
 				});
 			} else {
 				item = new PopupMenu.PopupMenuItem(text);
